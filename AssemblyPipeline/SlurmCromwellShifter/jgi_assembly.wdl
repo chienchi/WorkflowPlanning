@@ -86,10 +86,10 @@ task read_mapping_pairs{
              export mapping_input="infile.fastq"
         fi
         
-        bbmap.sh -Xmx115g threads=${dollar}(grep "model name" /proc/cpuinfo | wc -l) nodisk=true interleaved=true ambiguous=random in=$mapping_input ref=${ref} out=${filename_unsorted} covstats=${filename_cov} bamscript=${filename_bamscript}
+        bbmap.sh -Xmx105g threads=${dollar}(grep "model name" /proc/cpuinfo | wc -l) nodisk=true interleaved=true ambiguous=random in=$mapping_input ref=${ref} out=${filename_unsorted} covstats=${filename_cov} bamscript=${filename_bamscript}
         samtools sort -m100M -@ ${dollar}(grep "model name" /proc/cpuinfo | wc -l) ${filename_unsorted} -o ${filename_sorted}
         samtools index ${filename_sorted}
-        reformat.sh -Xmx115g in=${filename_unsorted} out=${filename_outsam} overwrite=true
+        reformat.sh -Xmx105g in=${filename_unsorted} out=${filename_outsam} overwrite=true
         rm $mapping_input
   }
   output{
@@ -124,7 +124,7 @@ task create_agp {
         curl --fail --max-time 10 --silent https://bitbucket.org/berkeleylab/jgi-meta/get/master.tar.gz | tar --wildcards -zxvf - "*/bin/resources.bash" && ./*/bin/resources.bash > ${filename_resources} &	
         sleep 30
         export TIME="time result\ncmd:%C\nreal %es\nuser %Us \nsys  %Ss \nmemory:%MKB \ncpu %P"
-        fungalrelease.sh -Xmx115g in=${scaffolds_in} out=${filename_scaffolds} outc=${filename_contigs} agp=${filename_agp} legend=${filename_legend} mincontig=200 minscaf=200 sortscaffolds=t sortcontigs=t overwrite=t
+        fungalrelease.sh -Xmx105g in=${scaffolds_in} out=${filename_scaffolds} outc=${filename_contigs} agp=${filename_agp} legend=${filename_legend} mincontig=200 minscaf=200 sortscaffolds=t sortcontigs=t overwrite=t
         if [ "${rename_contig_prefix}" != "scaffold" ]; then
             sed -i 's/scaffold/${rename_contig_prefix}_scf/g' ${filename_contigs} ${filename_scaffolds} ${filename_agp} ${filename_legend}
         fi
@@ -209,9 +209,9 @@ task bbcms {
              cat ${sep=" " input_files} > infile.fastq
              export bbcms_input="infile.fastq"
         fi
-        bbcms.sh -Xmx115g  metadatafile=${filename_counts} mincount=2 highcountfraction=0.6 in=$bbcms_input out=${filename_outfile} > >(tee -a ${filename_outlog}) 2> >(tee -a ${filename_errlog} >&2) && grep Unique ${filename_errlog} | rev |  cut -f 1 | rev  > ${filename_kmerfile}
-        reformat.sh -Xmx115g in=${filename_outfile} out1=${filename_outfile1} out2=${filename_outfile2}
-        readlength.sh -Xmx115g in=${filename_outfile} out=${filename_readlen}
+        bbcms.sh -Xmx105g  metadatafile=${filename_counts} mincount=2 highcountfraction=0.6 in=$bbcms_input out=${filename_outfile} > >(tee -a ${filename_outlog}) 2> >(tee -a ${filename_errlog} >&2) && grep Unique ${filename_errlog} | rev |  cut -f 1 | rev  > ${filename_kmerfile}
+        reformat.sh -Xmx105g in=${filename_outfile} out1=${filename_outfile1} out2=${filename_outfile2}
+        readlength.sh -Xmx105g in=${filename_outfile} out=${filename_readlen}
         rm $bbcms_input
      }
      output {
